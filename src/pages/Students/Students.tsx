@@ -1,20 +1,15 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import { useQuery } from '@tanstack/react-query'
+import { useQueryString } from 'utils/utils'
 import { getStudents } from 'apis/student.api'
-import { Students as StudentType } from 'type/student.type'
 export default function Students() {
-  const [students, setStudents] = React.useState<StudentType>([])
-  const [isLoading, setIsLoading] = React.useState<Boolean>(false)
-  React.useEffect(() => {
-    setIsLoading(true)
-    getStudents(1, 10)
-      .then((res) => {
-        setStudents(res.data)
-      })
-      .finally(() => {
-        setIsLoading(false)
-      })
-  }, [])
+  const queryString: { page?: string } = useQueryString()
+  const page = Number(queryString.page) || 1
+  const { data, isLoading } = useQuery({
+    queryKey: ['students', page],
+    queryFn: () => getStudents(page, 10)
+  })
   return (
     <div>
       <h1 className='text-lg'>Students</h1>
@@ -61,13 +56,13 @@ export default function Students() {
                 </tr>
               </thead>
               <tbody>
-                {students.map((student) => {
+                {data?.data.map((student) => {
                   return (
                     <tr
                       key={student.id}
                       className='border-b bg-white hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-600'
                     >
-                      <td className='py-4 px-6'>1</td>
+                      <td className='py-4 px-6'>{student.id}</td>
                       <td className='py-4 px-6'>
                         <img src={student.avatar} alt='student' className='h-5 w-5' />
                       </td>

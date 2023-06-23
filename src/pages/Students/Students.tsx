@@ -11,7 +11,8 @@ const Students: React.FC = () => {
   const page = Number(queryString.page) || 1
   const { data, isLoading } = useQuery({
     queryKey: ['students', page],
-    queryFn: () => getStudents(page, LIMIT)
+    queryFn: () => getStudents(page, LIMIT),
+    keepPreviousData: true
   })
   const totalStudentCount = Number(data?.headers['x-total-count']) || 1
   const totalPage = Math.ceil(totalStudentCount / LIMIT)
